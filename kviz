@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>квизшаблон</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 500px;
+      max-width: 90%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .hidden {
+      display: none;
+    }
+    .btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    .progress {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div id="start-screen">
+      <h1>начать!!!!!!!!</h1>
+      <button id="start-btn" class="btn">начать</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div id="question-container"></div>
+      <div class="progress" id="progress"></div>
+      <button id="next-btn" class="btn hidden">далее</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h2>результат</h2>
+      <p id="score"></p>
+      <button id="restart-btn" class="btn">пройти снова</button>
+    </div>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById("start-btn");
+    const quizScreen = document.getElementById("quiz-screen");
+    const startScreen = document.getElementById("start-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const questionContainer = document.getElementById("question-container");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreText = document.getElementById("score");
+    const progress = document.getElementById("progress");
+    const restartBtn = document.getElementById("restart-btn");
+
+    const questions = [
+      {
+        question: "школа наша где",
+        answers: ["париж", "москва", "аул", "константиново"],
+        correct: 3
+      },
+      {
+        question: "два умножить на два + 2",
+        answers: ["34", "8", "4", "6"],
+        correct: 3
+      },
+      {
+        question: "учитель проверяющий этот очень классный и проработанный сайт",
+        answers: ["Бурова Марина Васильевна", "Иванова Елена Алексеевна", "Директор Галина Алексеевна", "лб тпголс тбраль"],
+        correct: 0
+      },
+      {
+        question: "ответ леденец",
+        answers: ["ппп", "2", "леденец", "4"],
+        correct: 2
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    startBtn.addEventListener("click", startQuiz);
+    nextBtn.addEventListener("click", () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        showQuestion();
+      } else {
+        endQuiz();
+      }
+    });
+    restartBtn.addEventListener("click", () => {
+      resultScreen.classList.add("hidden");
+      startScreen.classList.remove("hidden");
+      score = 0;
+      currentQuestionIndex = 0;
+    });
+
+    function startQuiz() {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+    }
+
+    function showQuestion() {
+      nextBtn.classList.add("hidden");
+      const q = questions[currentQuestionIndex];
+      questionContainer.innerHTML = `
+        <h2>${q.question}</h2>
+        <ul>
+          ${q.answers.map((ans, i) =>
+            `<li><button class="btn answer-btn" data-index="${i}">${ans}</button></li>`
+          ).join("")}
+        </ul>
+      `;
+      progress.textContent = `Вопрос ${currentQuestionIndex + 1} из ${questions.length}`;
+
+      document.querySelectorAll(".answer-btn").forEach(btn => {
+        btn.addEventListener("click", selectAnswer);
+      });
+    }
+
+    function selectAnswer(e) {
+      const selectedIndex = e.target.dataset.index;
+      const correctIndex = questions[currentQuestionIndex].correct;
+      if (parseInt(selectedIndex) === correctIndex) {
+        score++;
+      }
+      document.querySelectorAll(".answer-btn").forEach(btn => btn.disabled = true);
+      nextBtn.classList.remove("hidden");
+    }
+
+    function endQuiz() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      scoreText.textContent = `Вы набрали ${score} из ${questions.length}`;
+    }
+  </script>
+</body>
+</html>
